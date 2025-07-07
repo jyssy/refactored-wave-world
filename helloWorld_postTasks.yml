@@ -1,0 +1,10 @@
+---
+- name: make script executable
+  ansible.builtin.file:
+    path: /tmp/helloWorld.sh
+    mode: "0755"
+
+- name: running helloWorld.sh
+  ansible.builtin.shell: /tmp/helloWorld.sh
+  args:
+    chdir: /tmp
