@@ -1,30 +1,13 @@
 ---
 # hello_playbook.yml
+---
+# hello_playbook.yml
 - hosts: tag_Name_Ops_Sysops
   become: true
   gather_facts: yes
 
   pre_tasks:
     - include_tasks: helloWorld/helloWorld_preTasks.yml
-
-  tasks:
-    - name: Ping the remote machine
-      ansible.builtin.ping:
-
-    - name: Display basic system info
-      debug:
-        msg:
-          - "Hostname: {{ ansible_hostname }}"
-          - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
-          - "Architecture: {{ ansible_architecture }}"
-
-    - name: Test command execution
-      command: whoami
-      register: current_user
-
-    - name: Show current user
-      debug:
-        msg: "Running as user: {{ current_user.stdout }}"
 
   post_tasks:
     - include_tasks: helloWorld/helloWorld_postTasks.yml

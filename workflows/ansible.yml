@@ -1,0 +1,89 @@
+name: Server-Dependent Deployment Testing
+
+on:
+  push:
+    branches:
+      - main
+      - ctt-539-workflow-testing01
+  workflow_dispatch:
+
+jobs:
+  operations_dev:
+    if: github.ref == 'refs/heads/ctt-539-workflow-testing01'
+    runs-on: self-hosted
+    env:
+      TARGET_HOST: operations3.access-ci.org
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Operations3
+        working-directory: ./ansible
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
+        run: |
+          ansible-playbook -i hosts hello_playbook.yml -vvvv \
+            --limit=${{ env.TARGET_HOST }} \
+            || { echo "❌ Deployment failed"; exit 1; }
+        # run: |
+        #   ansible-playbook -i hosts --vault-id ~/ansible_vault_password --vault-id ~/ansible_vault_password_bak portal_setup_playbook.yml -vvvv \
+        #     --limit=${{ env.TARGET_HOST }} \
+        #     || { echo "❌ Deployment failed"; exit 1; }
+
+      - name: Report Success
+        if: success()
+        run: echo "✅ Successfully deployed to ${{ env.TARGET_HOST }}"
+
+  operations_prod:
+    if: github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+    env:
+      TARGET_HOST: operations1.access-ci.org
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Production Server - Operations1
+        working-directory: ./ansible
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
+        run: |
+          ansible-playbook -i hosts hello_playbook.yml -vvvv \
+            --limit=${{ env.TARGET_HOST }} \
+            || { echo "❌ Deployment failed"; exit 1; }
+
+      - name: Report Success
+        if: success()
+        run: echo "✅ Successfully deployed to ${{ env.TARGET_HOST }}"
+#
+# name: Portal Workflow Basic Tests
+
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - ctt-539-workflow-testing01
+#       # - main
+
+# jobs:
+#   hello_world:
+#     runs-on: self-hosted
+
+#     steps:
+#       - name: Print working directory
+#         run: pwd
+
+#       - name: Print date
+#         run: echo $(date)
+
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: List files
+#         run: ls -l
+
+#       - name: Run Ansible Playbook
+#         working-directory: ./ansible
+#         run: |
+#           ansible-playbook -i hosts hello_playbook.yml -vvvv --limit=operations3.access-ci.org \
+#             || { echo "Ansible playbook failed"; exit 1; }

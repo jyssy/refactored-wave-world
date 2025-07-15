@@ -3,10 +3,15 @@
   ansible.builtin.apt:
     update_cache: true
 
-- name: copy some test files
+- name: Ensure /tmp/helloWorld directory exists
+  file:
+    path: /tmp/helloWorld/
+    state: directory
+    mode: "0755"
+
+- name: Copy test files
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "/tmp/{{ item }}"
   loop:
     - helloWorld/helloWorld.py
-    - helloWorld/helloWorld.sh

@@ -1,10 +1,19 @@
 ---
-- name: make script executable
+- name: Make Python Script Executable
   ansible.builtin.file:
-    path: /tmp/helloWorld.sh
+    path: /tmp/helloWorld/helloWorld.py
     mode: "0755"
 
-- name: running helloWorld.sh
-  ansible.builtin.shell: /tmp/helloWorld.sh
+- name: Running helloWorld.py
+  ansible.builtin.command: python3 /tmp/helloWorld/helloWorld.py
   args:
-    chdir: /tmp
+    chdir: /tmp/helloWorld
+
+- name: Posting date
+  ansible.builtin.shell: 'echo "Date: $(date)"'
+
+- name: RMing scripts
+  ansible.builtin.shell: rm /tmp/helloWorld/helloWorld.py
+  args:
+    chdir: /tmp/helloWorld
+# 01* on operations1
